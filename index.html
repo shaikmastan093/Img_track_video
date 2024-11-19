@@ -1,0 +1,52 @@
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <script src="https://aframe.io/releases/1.3.0/aframe.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.1/dist/mindar-image-aframe.prod.js"></script>
+  </head>
+  <script>
+        AFRAME.registerComponent("video-controller", {
+            init: function () {
+                const target = document.getElementById("target");
+                const video = document.getElementById("myVideo");
+
+                // Detect when the target is found
+                target.addEventListener("targetFound", event => {
+                    console.log("target found");
+                    this.found = true;
+                    video.play();
+                });
+
+                // Detect when the target is lost
+                target.addEventListener("targetLost", event => {
+                    console.log("target lost");
+                    this.found = false;
+                    video.pause();
+                });
+            }
+        });
+  </script>
+
+  <body>
+    <a-scene mindar-image="imageTargetSrc: ./assets/target/Wall.mind;" color-space="sRGB" renderer="colorManagement: true, physicallyCorrectLights" vr-mode-ui="enabled: false" device-orientation-permission-ui="enabled: false">
+      
+      <!-- Overlay Image (this is the image overlay on top of the AR content) -->
+      <a-image src="./assets/target/Wall.jpg" position="1 11" width="4" height="3" rotation="0 0 0" scale="2 2 1" opacity="2"></a-image>
+      
+      <!-- Camera -->
+      <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
+      
+      <!-- Video assets -->
+      <a-assets>
+        <video id="myVideo" src="./assets/videos/reality.mp4" preload loop></video>
+      </a-assets>
+
+      <!-- AR Target Entity -->
+      <a-entity mindar-image-target="targetIndex: 0" id="target">
+        <!-- Video Display Plane -->
+        <a-plane class="clickable" material="src: #myVideo; opacity: 1; transparent: true" video-controller></a-plane>
+      </a-entity>
+    </a-scene>
+  </body>
+</html>
